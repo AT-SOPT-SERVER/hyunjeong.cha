@@ -6,6 +6,10 @@ import org.sopt.service.validator.CreatedAtValidator;
 import org.sopt.service.validator.TitleValidator;
 import org.sopt.utils.IdGeneratorUtil;
 
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -27,6 +31,7 @@ public class PostService {
         Post post = new Post(newPostId, title);
 
         postRepository.save(post);
+        saveFile(post);
         createdAt = LocalDateTime.now();
     }
 
@@ -51,5 +56,24 @@ public class PostService {
 
     public List<Post> searchPostsByKeyword(String keyword){
         return postRepository.searchPostsByKeyword(keyword);
+    }
+
+    private void saveFile(Post post) {
+        try {
+            Path dirPath = Paths.get("org/sopt/assets");
+            Files.createDirectories(dirPath);
+
+            Path filePath = dirPath.resolve("Post.txt");
+
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath.toFile(), true);
+
+            byte[] b = post.getTitle().getBytes();
+            fileOutputStream.write(b);
+            fileOutputStream.write(System.lineSeparator().getBytes());
+
+            fileOutputStream.close();
+        } catch (Exception e) {
+            System.out.println("파일 저장 중 오류 발생: " + e.getMessage());
+        }
     }
 }
