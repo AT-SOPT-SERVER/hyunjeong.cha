@@ -48,4 +48,8 @@ public class PostService {
         post.update(title);
         return true;
     }
+
+    public List<Post> searchPostsByKeyword(String keyword){
+        return postRepository.searchPostsByKeyword(keyword);
+    }
 }

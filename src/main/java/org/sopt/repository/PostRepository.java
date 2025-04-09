@@ -45,4 +45,13 @@ public class PostRepository {
         return false;
     }
 
+    public List<Post> searchPostsByKeyword(String keyword){
+        List<Post> searchPost = new ArrayList<>();
+        for (Post post : postList){
+            if (post.getTitle().contains(keyword))
+                searchPost.add(post);
+        }
+        return searchPost;
+    }
+
 }
