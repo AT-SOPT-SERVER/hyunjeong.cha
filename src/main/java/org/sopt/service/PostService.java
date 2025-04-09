@@ -13,6 +13,7 @@ public class PostService {
     private int postId = 1;
 
     public void createPost(String title) {
+        titleValidator.titleValidate(title, postRepository.findTitle(title));
         Post post = new Post(postId++, title);
 
         postRepository.save(post);
@@ -31,7 +32,7 @@ public class PostService {
     }
 
     public boolean updatePost(int id, String title){
-        titleValidator.titleValidate(title);
+        titleValidator.titleValidate(title, postRepository.findTitle(title));
         Post post = postResolver.resolvePost(postRepository.findPostById(id));
         post.update(title);
         return true;

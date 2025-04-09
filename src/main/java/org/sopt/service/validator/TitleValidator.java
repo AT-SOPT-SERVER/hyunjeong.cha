@@ -1,16 +1,19 @@
 package org.sopt.service.validator;
 
-import static org.sopt.exception.CommonException.EMPTY_TITLE;
-import static org.sopt.exception.CommonException.TOO_LONG_TITLE;
+import org.sopt.repository.PostRepository;
+
+import static org.sopt.exception.CommonException.*;
 
 public class TitleValidator {
 
-    public void titleValidate(String title){
+    public void titleValidate(String title, boolean isExistTitle){
         
-        if (title.isEmpty())
+        if (title.isEmpty()) {
             throw new IllegalArgumentException(EMPTY_TITLE.getMessage());
-        else if (title.length() > 30) {
+        } else if (title.length() > 30) {
             throw new IllegalArgumentException(TOO_LONG_TITLE.getMessage());
+        } else if (isExistTitle) {
+            throw new IllegalArgumentException(DUPLICATE_TITLE.getMessage());
         }
     }
 }

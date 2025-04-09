@@ -36,4 +36,13 @@ public class PostRepository {
         return false;
     }
 
+    public boolean findTitle(String newTitle){
+        for (Post post : postList){
+            if (post.getTitle().equals(newTitle)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
