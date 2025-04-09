@@ -76,4 +76,5 @@ public class PostService {
             System.out.println("파일 저장 중 오류 발생: " + e.getMessage());
         }
     }
+
 }
