@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.sopt.utils.IdGeneratorUtil.generateId;
+
 public class PostRepository {
     private final Map<Long, Post> postMap = new HashMap<>();
 
@@ -62,10 +64,10 @@ public class PostRepository {
             String[] parts = line.split("\\|");
             if (parts.length < 2) continue;
 
-            Long id = Long.parseLong(parts[0]);
+            Long newId = generateId();
             String title = parts[1];
 
-            postMap.put(id, new Post(id, title));
+            postMap.put(newId, new Post(newId, title));
         }
         reader.close();
     }
