@@ -2,10 +2,7 @@ package org.sopt.repository;
 
 import org.sopt.domain.Post;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,26 +52,23 @@ public class PostRepository {
         return searchPost;
     }
 
-    public void loadFile(){
-        try {
-            File file = new File("org/sopt/assets/Post.txt");
-            if (!file.exists()) return;
+    public void loadFile() throws IOException {
+        File file = new File("org/sopt/assets/Post.txt");
+        if (!file.exists()) return;
 
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length < 2) continue;
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split("\\|");
+            if (parts.length < 2) continue;
 
-                Long id = Long.parseLong(parts[0]);
-                String title = parts[1];
+            Long id = Long.parseLong(parts[0]);
+            String title = parts[1];
 
-                postMap.put(id, new Post(id, title));
-            }
-            reader.close();
-        } catch (Exception e) {
-            System.out.println("파일 불러오기 중 오류 발생: " + e.getMessage());
+            postMap.put(id, new Post(id, title));
         }
+        reader.close();
     }
+
 
 }

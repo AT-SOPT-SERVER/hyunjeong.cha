@@ -3,6 +3,7 @@ package org.sopt.controller;
 import org.sopt.domain.Post;
 import org.sopt.service.PostService;
 
+import java.io.IOException;
 import java.util.List;
 
 public class PostController {
@@ -41,8 +42,13 @@ public class PostController {
         return postService.searchPostsByKeyword(keyword);
     }
 
-    public void loadFile(){
-        postService.loadFile();
+    public void loadFile() {
+        try {
+            postService.loadFile();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
+
 
 }

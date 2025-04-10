@@ -7,6 +7,7 @@ import org.sopt.service.validator.TitleValidator;
 import org.sopt.utils.IdGeneratorUtil;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +25,7 @@ public class PostService {
 
     private LocalDateTime createdAt;
 
-    public void createPost(String title) {
+    public void createPost(String title) throws IOException{
         createdAtValidator.createdAtValidate(createdAt);
         titleValidator.titleValidate(title, postRepository.findTitle(title));
         Long newPostId = idGenerator.generateId();
@@ -58,8 +59,7 @@ public class PostService {
         return postRepository.searchPostsByKeyword(keyword);
     }
 
-    private void saveFile(Post post) {
-        try {
+    private void saveFile(Post post) throws IOException {
             Path dirPath = Paths.get("org/sopt/assets");
             Files.createDirectories(dirPath);
 
@@ -71,12 +71,9 @@ public class PostService {
             fileOutputStream.write(line.getBytes());
 
             fileOutputStream.close();
-        } catch (Exception e) {
-            System.out.println("파일 저장 중 오류 발생: " + e.getMessage());
-        }
     }
 
-    public void loadFile(){
+    public void loadFile() throws IOException {
         postRepository.loadFile();
     }
 
