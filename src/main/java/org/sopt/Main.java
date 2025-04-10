@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.Scanner;
 import org.sopt.controller.PostController;
 import org.sopt.domain.Post;
+import org.sopt.repository.PostRepository;
 
 public class Main {
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         PostController controller = new PostController();
-
         printWelcome();
 
         while (true) {

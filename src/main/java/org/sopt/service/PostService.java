@@ -67,14 +67,17 @@ public class PostService {
 
             FileOutputStream fileOutputStream = new FileOutputStream(filePath.toFile(), true);
 
-            byte[] b = post.getTitle().getBytes();
-            fileOutputStream.write(b);
-            fileOutputStream.write(System.lineSeparator().getBytes());
+            String line = post.getId() + "|" + post.getTitle() + System.lineSeparator();
+            fileOutputStream.write(line.getBytes());
 
             fileOutputStream.close();
         } catch (Exception e) {
             System.out.println("파일 저장 중 오류 발생: " + e.getMessage());
         }
+    }
+
+    public void loadFile(){
+        postRepository.loadFile();
     }
 
 }

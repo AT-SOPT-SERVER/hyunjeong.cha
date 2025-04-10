@@ -41,4 +41,8 @@ public class PostController {
         return postService.searchPostsByKeyword(keyword);
     }
 
+    public void loadFile(){
+        postService.loadFile();
+    }
+
 }
