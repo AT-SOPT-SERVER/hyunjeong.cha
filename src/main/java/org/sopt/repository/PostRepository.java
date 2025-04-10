@@ -7,42 +7,39 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PostRepository {
-    List<Post> postList = new ArrayList<>();
+    private final Map<Long, Post> postMap = new HashMap<>();
 
     public void save(Post post) {
-        postList.add(post);
+        postMap.put(post.getId(), post);
     }
 
     public List<Post> findAll() {
-        return postList;
+        return new ArrayList<>(postMap.values());
     }
 
-    public Post findPostById(int id) {
-        for (Post post : postList) {
-            if (post.getId() == id) {
-                return post;
-            }
-        }
+    public Post findPostById(Long id) {
+        if (postMap.get(id) != null)
+            return postMap.get(id);
 
         return null;
     }
 
-    public boolean delete(int id) {
-        for (Post post : postList) {
-            if (post.getId() == id) {
-                postList.remove(post);
-                return true;
-            }
+    public boolean delete(Long id) {
+        if (postMap.get(id) != null) {
+            postMap.remove(id);
+            return true;
         }
         return false;
     }
 
-    public boolean findTitle(String newTitle){
-        for (Post post : postList){
-            if (post.getTitle().equals(newTitle)){
+    public boolean findTitle(String newTitle) {
+        for (Post post : postMap.values()) {
+            if (post.getTitle().equals(newTitle)) {
                 return true;
             }
         }
@@ -51,7 +48,7 @@ public class PostRepository {
 
     public List<Post> searchPostsByKeyword(String keyword){
         List<Post> searchPost = new ArrayList<>();
-        for (Post post : postList){
+        for (Post post : postMap.values()) {
             if (post.getTitle().contains(keyword))
                 searchPost.add(post);
         }
@@ -60,7 +57,6 @@ public class PostRepository {
 
     public void loadFile(){
         try {
-            System.out.println("1");
             File file = new File("org/sopt/assets/Post.txt");
             if (!file.exists()) return;
 
@@ -70,11 +66,10 @@ public class PostRepository {
                 String[] parts = line.split("\\|");
                 if (parts.length < 2) continue;
 
-                int id = Integer.parseInt(parts[0]);
+                Long id = Long.parseLong(parts[0]);
                 String title = parts[1];
 
-                System.out.println("2");
-                postList.add(new Post(id, title));
+                postMap.put(id, new Post(id, title));
             }
             reader.close();
         } catch (Exception e) {

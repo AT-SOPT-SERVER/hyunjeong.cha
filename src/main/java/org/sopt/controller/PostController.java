@@ -20,10 +20,10 @@ public class PostController {
         return postService.getAllPosts();
     }
 
-    public Post getPostById(final int id) {
+    public Post getPostById(final Long id) {
         return postService.getPostById(id);
     }
-    public Boolean updatePostTitle(final int id, final String newTitle) {
+    public Boolean updatePostTitle(final Long id, final String newTitle) {
         try {
             return postService.updatePost(id, newTitle);
 
@@ -33,7 +33,7 @@ public class PostController {
         }
     }
 
-    public boolean deletePostById(final int id) {
+    public boolean deletePostById(final Long id) {
         return postService.deletePostById(id);
     }
 

@@ -27,7 +27,7 @@ public class PostService {
     public void createPost(String title) {
         createdAtValidator.createdAtValidate(createdAt);
         titleValidator.titleValidate(title, postRepository.findTitle(title));
-        int newPostId = idGenerator.generateId();
+        Long newPostId = idGenerator.generateId();
         Post post = new Post(newPostId, title);
 
         postRepository.save(post);
@@ -39,15 +39,15 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public Post getPostById(int id) {
+    public Post getPostById(Long id) {
         return postRepository.findPostById(id);
     }
 
-    public boolean deletePostById(int id) {
+    public boolean deletePostById(Long id) {
         return postRepository.delete(id);
     }
 
-    public boolean updatePost(int id, String title){
+    public boolean updatePost(Long id, String title){
         titleValidator.titleValidate(title, postRepository.findTitle(title));
         Post post = postResolver.resolvePost(postRepository.findPostById(id));
         post.update(title);
