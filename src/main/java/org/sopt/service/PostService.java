@@ -1,10 +1,11 @@
 package org.sopt.service;
 
 import org.sopt.domain.Post;
+import org.sopt.dto.PostRequest;
 import org.sopt.repository.PostRepository;
 import org.sopt.service.validator.CreatedAtValidator;
 import org.sopt.service.validator.TitleValidator;
-import org.sopt.utils.IdGeneratorUtil;
+import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,27 +14,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
+@Service
 public class PostService {
-    private final PostRepository postRepository = new PostRepository();
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository){
+        this.postRepository = postRepository;
+    }
     private final TitleValidator titleValidator = new TitleValidator();
     private final CreatedAtValidator createdAtValidator = new CreatedAtValidator();
     private final PostResolver postResolver = new PostResolver();
-    private final IdGeneratorUtil idGenerator = new IdGeneratorUtil();
 
     private LocalDateTime createdAt;
 
-    public void createPost(String title) throws IOException{
+    public void createPost(PostRequest request) throws IOException{
         createdAtValidator.createdAtValidate(createdAt);
-        titleValidator.titleValidate(title, postRepository.findTitle(title));
-        Long newPostId = idGenerator.generateId();
-        Post post = new Post(newPostId, title);
+        titleValidator.titleValidate(request.title(), postRepository.findTitle(request.title()));
+        Post post = new Post(request.title());
 
         postRepository.save(post);
         saveFile(post);
         createdAt = LocalDateTime.now();
+        System.out.println(post.getTitle());
     }
 
     public List<Post> getAllPosts() {
@@ -48,10 +51,10 @@ public class PostService {
         return postRepository.delete(id);
     }
 
-    public boolean updatePost(Long id, String title){
-        titleValidator.titleValidate(title, postRepository.findTitle(title));
+    public boolean updatePost(Long id, PostRequest request){
+        titleValidator.titleValidate(request.title(), postRepository.findTitle(request.title()));
         Post post = postResolver.resolvePost(postRepository.findPostById(id));
-        post.update(title);
+        post.updateTitle(request.title());
         return true;
     }
 

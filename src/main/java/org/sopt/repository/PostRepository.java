@@ -1,6 +1,7 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
+import org.springframework.stereotype.Repository;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import static org.sopt.utils.IdGeneratorUtil.generateId;
 
+@Repository
 public class PostRepository {
     private final Map<Long, Post> postMap = new HashMap<>();
 

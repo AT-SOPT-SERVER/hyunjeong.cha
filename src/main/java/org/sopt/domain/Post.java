@@ -1,12 +1,22 @@
 package org.sopt.domain;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Post {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
     private String title;
 
-    public Post(Long id, String title) {
-        this.id = id;
+    public Post(String title) {
         this.title = title;
+    }
+
+    public Post() {
+
     }
 
     public Long getId() {
@@ -17,7 +27,7 @@ public class Post {
         return this.title;
     }
 
-    public void update(String title) {
+    public void updateTitle(String title) {
         this.title = title;
     }
 }

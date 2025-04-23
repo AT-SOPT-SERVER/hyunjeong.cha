@@ -1,32 +1,46 @@
 package org.sopt.controller;
 
 import org.sopt.domain.Post;
+import org.sopt.dto.PostRequest;
 import org.sopt.service.PostService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
 
+@RestController
 public class PostController {
-    private final PostService postService = new PostService();
+    private final PostService postService;
 
-    public void createPost(final String title) {
+    public PostController(PostService postService){
+        this.postService = postService;
+    }
+
+    @PostMapping("/api/v1/contents")
+    public void createPost(@RequestBody final PostRequest request) {
         try {
-            postService.createPost(title);
+            postService.createPost(request);
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
 
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    @GetMapping("/api/v1/contents")
+    public ResponseEntity<?> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 
-    public Post getPostById(final Long id) {
-        return postService.getPostById(id);
+    @GetMapping("/api/v1/contents/{contentId}")
+    public Post getPostById(@PathVariable final Long contentId) {
+        return postService.getPostById(contentId);
     }
-    public Boolean updatePostTitle(final Long id, final String newTitle) {
+
+    @PatchMapping("/api/v1/contents/{contentId}")
+    public Boolean updatePostTitle(@PathVariable final Long contentId,
+                                   @RequestBody final PostRequest request) {
         try {
-            return postService.updatePost(id, newTitle);
+            return postService.updatePost(contentId, request);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -34,11 +48,15 @@ public class PostController {
         }
     }
 
-    public boolean deletePostById(final Long id) {
-        return postService.deletePostById(id);
+    @DeleteMapping("/api/v1/contents/{contentId}")
+    public boolean deletePostById(@PathVariable final Long contentId) {
+        return postService.deletePostById(contentId);
     }
 
-    public List<Post> searchPostsByKeyword(final String keyword) {
+    @GetMapping("/api/v1/contents/{keyword}")
+    public List<Post> searchPostsByKeyword(
+            @PathVariable final String keyword
+    ) {
         return postService.searchPostsByKeyword(keyword);
     }
 
@@ -49,6 +67,4 @@ public class PostController {
             System.out.println(e.getMessage());
         }
     }
-
-
 }
