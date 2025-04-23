@@ -7,6 +7,7 @@ import org.sopt.dto.PostIdResponse;
 import org.sopt.dto.PostResponse;
 import org.sopt.repository.PostRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class PostService {
         this.postRepository = postRepository;
    }
 
+   @Transactional
     public PostIdResponse createPost(PostRequest request){
         if (postRepository.existsByTitle(request.title())) {
             throw new IllegalArgumentException(DUPLICATE_TITLE.getMessage());
@@ -30,6 +32,7 @@ public class PostService {
         return new PostIdResponse(postRepository.save(post).getId());
     }
 
+    @Transactional(readOnly = true)
     public PostAllResponse getAllPosts() {
         List<PostResponse> postResponses = postRepository.findAll().stream()
                 .map(post -> new PostResponse(post.getTitle(), post.getId()))
@@ -38,6 +41,7 @@ public class PostService {
         return new PostAllResponse(postResponses);
     }
 
+    @Transactional(readOnly = true)
     public PostResponse getPostById(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(EMPTY_POST.getMessage()));
@@ -45,10 +49,12 @@ public class PostService {
         return new PostResponse(post.getTitle(), post.getId());
     }
 
+    @Transactional
     public void deletePostById(Long id) {
         postRepository.deleteById(id);
     }
 
+    @Transactional
     public PostResponse updatePost(Long id, PostRequest request){
         if (postRepository.existsByTitle(request.title())) {
             throw new IllegalArgumentException(DUPLICATE_TITLE.getMessage());
@@ -59,6 +65,7 @@ public class PostService {
         return new PostResponse(post.getTitle(), post.getId());
     }
 
+    @Transactional(readOnly = true)
     public PostAllResponse searchPostsByKeyword(String keyword){
 
         List<PostResponse> postResponses = postRepository.findByTitleContaining(keyword).stream()
