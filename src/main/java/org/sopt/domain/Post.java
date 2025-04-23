@@ -8,7 +8,7 @@ public class Post {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String title;
 
     public Post(String title) {
@@ -30,4 +30,5 @@ public class Post {
     public void updateTitle(String title) {
         this.title = title;
     }
+
 }

@@ -1,19 +1,17 @@
 package org.sopt.service;
 
 import org.sopt.domain.Post;
+import org.sopt.dto.PostAllResponse;
 import org.sopt.dto.PostRequest;
+import org.sopt.dto.PostIdResponse;
+import org.sopt.dto.PostResponse;
 import org.sopt.repository.PostRepository;
-import org.sopt.service.validator.CreatedAtValidator;
-import org.sopt.service.validator.TitleValidator;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.sopt.exception.CommonException.DUPLICATE_TITLE;
+import static org.sopt.exception.CommonException.EMPTY_POST;
 
 @Service
 public class PostService {
@@ -21,63 +19,54 @@ public class PostService {
 
     public PostService(PostRepository postRepository){
         this.postRepository = postRepository;
-    }
-    private final TitleValidator titleValidator = new TitleValidator();
-    private final CreatedAtValidator createdAtValidator = new CreatedAtValidator();
-    private final PostResolver postResolver = new PostResolver();
+   }
 
-    private LocalDateTime createdAt;
-
-    public void createPost(PostRequest request) throws IOException{
-        createdAtValidator.createdAtValidate(createdAt);
-        titleValidator.titleValidate(request.title(), postRepository.findTitle(request.title()));
+    public PostIdResponse createPost(PostRequest request){
+        if (postRepository.existsByTitle(request.title())) {
+            throw new IllegalArgumentException(DUPLICATE_TITLE.getMessage());
+        }
         Post post = new Post(request.title());
 
-        postRepository.save(post);
-        saveFile(post);
-        createdAt = LocalDateTime.now();
-        System.out.println(post.getTitle());
+        return new PostIdResponse(postRepository.save(post).getId());
     }
 
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public PostAllResponse getAllPosts() {
+        List<PostResponse> postResponses = postRepository.findAll().stream()
+                .map(post -> new PostResponse(post.getTitle(), post.getId()))
+                .toList();
+
+        return new PostAllResponse(postResponses);
     }
 
-    public Post getPostById(Long id) {
-        return postRepository.findPostById(id);
+    public PostResponse getPostById(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(EMPTY_POST.getMessage()));
+
+        return new PostResponse(post.getTitle(), post.getId());
     }
 
-    public boolean deletePostById(Long id) {
-        return postRepository.delete(id);
+    public void deletePostById(Long id) {
+        postRepository.deleteById(id);
     }
 
-    public boolean updatePost(Long id, PostRequest request){
-        titleValidator.titleValidate(request.title(), postRepository.findTitle(request.title()));
-        Post post = postResolver.resolvePost(postRepository.findPostById(id));
+    public PostResponse updatePost(Long id, PostRequest request){
+        if (postRepository.existsByTitle(request.title())) {
+            throw new IllegalArgumentException(DUPLICATE_TITLE.getMessage());
+        }
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new NullPointerException(EMPTY_POST.getMessage()));
         post.updateTitle(request.title());
-        return true;
+        return new PostResponse(post.getTitle(), post.getId());
     }
 
-    public List<Post> searchPostsByKeyword(String keyword){
-        return postRepository.searchPostsByKeyword(keyword);
+    public PostAllResponse searchPostsByKeyword(String keyword){
+
+        List<PostResponse> postResponses = postRepository.findByTitleContaining(keyword).stream()
+                .map(post -> new PostResponse(post.getTitle(), post.getId()))
+                .toList();
+
+        return new PostAllResponse(postResponses);
     }
 
-    private void saveFile(Post post) throws IOException {
-            Path dirPath = Paths.get("org/sopt/assets");
-            Files.createDirectories(dirPath);
-
-            Path filePath = dirPath.resolve("Post.txt");
-
-            FileOutputStream fileOutputStream = new FileOutputStream(filePath.toFile(), true);
-
-            String line = post.getId() + "|" + post.getTitle() + System.lineSeparator();
-            fileOutputStream.write(line.getBytes());
-
-            fileOutputStream.close();
-    }
-
-    public void loadFile() throws IOException {
-        postRepository.loadFile();
-    }
 
 }
