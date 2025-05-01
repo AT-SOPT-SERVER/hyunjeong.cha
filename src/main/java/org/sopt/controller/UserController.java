@@ -6,6 +6,7 @@ import org.sopt.common.SuccessCode;
 import org.sopt.dto.UserSignupRequest;
 import org.sopt.dto.UserSignupResponse;
 import org.sopt.service.UserService;
+import org.sopt.utils.TextUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ public class UserController {
     public ResponseEntity<CommonApiResponse<UserSignupResponse>> signup(
             @RequestBody UserSignupRequest request
             ){
+        TextUtil.validateName(request.name());
         UserSignupResponse response = userService.signup(request);
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK, response));

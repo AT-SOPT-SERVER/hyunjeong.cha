@@ -23,10 +23,11 @@ public class Post extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     PostType postType;
 
-    public Post(String title, String content, User user) {
+    public Post(String title, String content, User user, PostType postType) {
         this.title = title;
         this.content = content;
         this.user = user;
+        this.postType = postType;
     }
 
     public Post() {
@@ -46,6 +47,15 @@ public class Post extends BaseTimeEntity {
     }
 
     public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updatePost(String content, String title) {
+        this.content = content;
         this.title = title;
     }
 

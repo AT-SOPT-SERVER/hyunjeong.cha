@@ -2,6 +2,7 @@ package org.sopt.service;
 
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
+import org.sopt.domain.enums.PostType;
 import org.sopt.dto.*;
 import org.sopt.exception.CustomException;
 import org.sopt.repository.PostRepository;
@@ -32,7 +33,7 @@ public class PostService {
        User user = userRepository.findById(userId)
                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-        Post post = new Post(request.title(), request.content(), user);
+        Post post = new Post(request.title(), request.content(), user, PostType.valueOf(request.postType()));
 
         return new PostIdResponse(postRepository.save(post).getId());
     }
@@ -55,26 +56,53 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePostById(Long id) {
+    public void deletePostById(Long id, Long userId) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new CustomException(EMPTY_POST));
+
+        if (!post.getUser().getId().equals(userId))
+            throw new CustomException(USER_UNAUTHORIZED);
+
         postRepository.deleteById(id);
     }
 
     @Transactional
-    public PostResponse updatePost(Long id, PostRequest request){
+    public PostResponse updatePost(Long id, PostUpdateRequest request, Long userId){
         if (postRepository.existsByTitle(request.title())) {
-            throw new IllegalArgumentException(DUPLICATE_TITLE.getMessage());
+            throw new CustomException(DUPLICATE_TITLE);
         }
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new NullPointerException(EMPTY_POST.getMessage()));
-        post.updateTitle(request.title());
-        return new PostResponse(post.getTitle(), post.getId());
+                .orElseThrow(() -> new CustomException(EMPTY_POST));
+
+        if (!post.getUser().getId().equals(userId))
+            throw new CustomException(USER_UNAUTHORIZED);
+
+        if (request.title() != null) {
+            post.updateTitle(request.title());
+        }
+
+        if (request.content() != null) {
+            post.updateContent(request.content());
+        }
+
+        return new PostResponse(post.getTitle(), post.getId(), post.getUser().getName(), post.getContent());
     }
 
     @Transactional(readOnly = true)
     public PostAllResponse searchPostsByKeyword(String keyword){
 
-        List<PostResponse> postResponses = postRepository.findByTitleContaining(keyword).stream()
-                .map(post -> new PostResponse(post.getTitle(), post.getId()))
+        List<PostListResponse> postResponses = postRepository.searchByTitleOrUserName(keyword).stream()
+                .map(post -> new PostListResponse(post.getTitle(), post.getId(), post.getUser().getName()))
+                .toList();
+
+        return new PostAllResponse(postResponses);
+    }
+
+    @Transactional(readOnly = true)
+    public PostAllResponse searchPostsByTag(String tag){
+
+        List<PostListResponse> postResponses = postRepository.findByPostType(PostType.valueOf(tag)).stream()
+                .map(post -> new PostListResponse(post.getTitle(), post.getId(), post.getUser().getName()))
                 .toList();
 
         return new PostAllResponse(postResponses);

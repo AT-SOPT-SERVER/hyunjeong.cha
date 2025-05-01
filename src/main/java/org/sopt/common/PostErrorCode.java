@@ -6,9 +6,12 @@ public enum PostErrorCode implements ErrorCode {
 
     EMPTY_TITLE(HttpStatus.BAD_REQUEST,"제목이 비어있을 수 없습니다."),
     TOO_LONG_TITLE(HttpStatus.BAD_REQUEST, "제목은 30자 미만이어야 합니다."),
+    TOO_LONG_CONTENT(HttpStatus.BAD_REQUEST, "게시글은 30자 미만이어야 합니다."),
+    TOO_LONG_NAME(HttpStatus.BAD_REQUEST, "유저 이름은 30자 미만이어야 합니다."),
     EMPTY_POST(HttpStatus.NOT_FOUND, "해당 게시글이 존재하지 않습니다."),
     DUPLICATE_TITLE(HttpStatus.BAD_REQUEST, "같은 제목의 게시글은 작성할 수 없습니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다.");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
+    USER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
