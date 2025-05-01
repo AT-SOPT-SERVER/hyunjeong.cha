@@ -11,10 +11,6 @@ public class User {
     @Column(nullable = false)
     String name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     public User(String name){
         this.name = name;
     }

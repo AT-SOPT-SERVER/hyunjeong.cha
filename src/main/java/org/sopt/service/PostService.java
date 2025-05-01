@@ -1,41 +1,46 @@
 package org.sopt.service;
 
 import org.sopt.domain.Post;
-import org.sopt.dto.PostAllResponse;
-import org.sopt.dto.PostRequest;
-import org.sopt.dto.PostIdResponse;
-import org.sopt.dto.PostResponse;
+import org.sopt.domain.User;
+import org.sopt.dto.*;
+import org.sopt.exception.CustomException;
 import org.sopt.repository.PostRepository;
+import org.sopt.repository.UserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.sopt.exception.CommonException.DUPLICATE_TITLE;
-import static org.sopt.exception.CommonException.EMPTY_POST;
+import static org.sopt.common.PostErrorCode.*;
 
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository){
+    public PostService(PostRepository postRepository, UserRepository userRepository){
         this.postRepository = postRepository;
-   }
+        this.userRepository = userRepository;
+    }
 
    @Transactional
-    public PostIdResponse createPost(PostRequest request){
+    public PostIdResponse createPost(PostRequest request, Long userId){
         if (postRepository.existsByTitle(request.title())) {
-            throw new IllegalArgumentException(DUPLICATE_TITLE.getMessage());
+            throw new CustomException(DUPLICATE_TITLE);
         }
-        Post post = new Post(request.title());
+       User user = userRepository.findById(userId)
+               .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Post post = new Post(request.title(), request.content(), user);
 
         return new PostIdResponse(postRepository.save(post).getId());
     }
 
     @Transactional(readOnly = true)
     public PostAllResponse getAllPosts() {
-        List<PostResponse> postResponses = postRepository.findAll().stream()
-                .map(post -> new PostResponse(post.getTitle(), post.getId()))
+        List<PostListResponse> postResponses = postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream()
+                .map(post -> new PostListResponse(post.getTitle(), post.getId(), post.getUser().getName()))
                 .toList();
 
         return new PostAllResponse(postResponses);
@@ -44,9 +49,9 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getPostById(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(EMPTY_POST.getMessage()));
+                .orElseThrow(() -> new CustomException(EMPTY_POST));
 
-        return new PostResponse(post.getTitle(), post.getId());
+        return new PostResponse(post.getTitle(), post.getId(), post.getUser().getName(), post.getContent());
     }
 
     @Transactional

@@ -1,9 +1,11 @@
 package org.sopt.domain;
 
 import jakarta.persistence.*;
+import org.sopt.domain.common.BaseTimeEntity;
+import org.sopt.domain.enums.PostType;
 
 @Entity
-public class Post {
+public class Post extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,9 +16,17 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
-    public Post(String title, String content) {
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Enumerated(EnumType.STRING)
+    PostType postType;
+
+    public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
+        this.user = user;
     }
 
     public Post() {
@@ -39,4 +49,7 @@ public class Post {
         this.title = title;
     }
 
+    public User getUser() {
+        return user;
+    }
 }

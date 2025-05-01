@@ -1,5 +1,7 @@
 package org.sopt.controller;
 
+import org.sopt.common.CommonApiResponse;
+import org.sopt.common.CommonSuccessCode;
 import org.sopt.common.PostErrorCode;
 import org.sopt.dto.PostAllResponse;
 import org.sopt.dto.PostRequest;
@@ -22,10 +24,13 @@ public class PostController {
     }
 
     @PostMapping("/api/v1/contents")
-    public ResponseEntity<PostIdResponse> createPost(@RequestBody final PostRequest request) {
+    public ResponseEntity<CommonApiResponse<PostIdResponse>> createPost(
+            @RequestBody final PostRequest request,
+            @RequestHeader Long userId) {
         TextUtil.lengthTitleWithEmoji(request.title());
-        PostIdResponse response = postService.createPost(request);
-        return ResponseEntity.created(URI.create("/api/v1/contents")).body(response);
+        PostIdResponse response = postService.createPost(request, userId);
+        return ResponseEntity.status(CommonSuccessCode.CREATED.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.CREATED, response));
 
     }
 
@@ -40,14 +45,18 @@ public class PostController {
     }
 
     @PatchMapping("/api/v1/contents/{contentId}")
-    public ResponseEntity<PostResponse> updatePostTitle(@PathVariable final Long contentId,
-                                   @RequestBody final PostRequest request) {
+    public ResponseEntity<PostResponse> updatePostTitle(
+            @PathVariable final Long contentId,
+            @RequestBody final PostRequest request,
+            @RequestHeader Long userId) {
         TextUtil.lengthTitleWithEmoji(request.title());
         return ResponseEntity.ok(postService.updatePost(contentId, request));
     }
 
     @DeleteMapping("/api/v1/contents/{contentId}")
-    public ResponseEntity<Void> deletePostById(@PathVariable final Long contentId) {
+    public ResponseEntity<Void> deletePostById(
+            @PathVariable final Long contentId,
+            @RequestHeader Long userId) {
         postService.deletePostById(contentId);
         return ResponseEntity.ok().build();
     }
@@ -58,4 +67,5 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.searchPostsByKeyword(keyword));
     }
+
 }
