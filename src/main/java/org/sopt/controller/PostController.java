@@ -1,17 +1,17 @@
 package org.sopt.controller;
 
+import org.sopt.common.PostErrorCode;
 import org.sopt.dto.PostAllResponse;
 import org.sopt.dto.PostRequest;
 import org.sopt.dto.PostIdResponse;
 import org.sopt.dto.PostResponse;
+import org.sopt.exception.CustomException;
 import org.sopt.service.PostService;
 import org.sopt.utils.TextUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-
-import static org.sopt.exception.CommonException.TOO_LONG_TITLE;
 
 @RestController
 public class PostController {
@@ -23,9 +23,7 @@ public class PostController {
 
     @PostMapping("/api/v1/contents")
     public ResponseEntity<PostIdResponse> createPost(@RequestBody final PostRequest request) {
-        if (TextUtil.lengthTitleWithEmoji(request.title())> 30) {
-            throw new IllegalArgumentException(TOO_LONG_TITLE.getMessage());
-        }
+        TextUtil.lengthTitleWithEmoji(request.title());
         PostIdResponse response = postService.createPost(request);
         return ResponseEntity.created(URI.create("/api/v1/contents")).body(response);
 
@@ -44,9 +42,7 @@ public class PostController {
     @PatchMapping("/api/v1/contents/{contentId}")
     public ResponseEntity<PostResponse> updatePostTitle(@PathVariable final Long contentId,
                                    @RequestBody final PostRequest request) {
-        if (TextUtil.lengthTitleWithEmoji(request.title())> 30) {
-            throw new IllegalArgumentException(TOO_LONG_TITLE.getMessage());
-        }
+        TextUtil.lengthTitleWithEmoji(request.title());
         return ResponseEntity.ok(postService.updatePost(contentId, request));
     }
 
