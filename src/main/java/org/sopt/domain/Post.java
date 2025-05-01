@@ -11,8 +11,12 @@ public class Post {
     @Column(nullable = false)
     private String title;
 
-    public Post(String title) {
+    @Column(nullable = false)
+    private String content;
+
+    public Post(String title, String content) {
         this.title = title;
+        this.content = content;
     }
 
     public Post() {
@@ -25,6 +29,10 @@ public class Post {
 
     public String getTitle() {
         return this.title;
+    }
+
+    public String getContent() {
+        return this.content;
     }
 
     public void updateTitle(String title) {
