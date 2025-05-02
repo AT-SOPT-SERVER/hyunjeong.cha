@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.sopt.common.PostErrorCode.*;
+import static org.sopt.common.UserErrorCode.USER_NOT_FOUND;
+import static org.sopt.common.UserErrorCode.USER_UNAUTHORIZED;
 
 @Service
 public class PostService {
