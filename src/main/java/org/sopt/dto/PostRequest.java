@@ -1,7 +1,6 @@
 package org.sopt.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import org.sopt.domain.enums.PostType;
 
 public record PostRequest(
         @NotBlank(message = "제목은 비어있을 수 없습니다.")

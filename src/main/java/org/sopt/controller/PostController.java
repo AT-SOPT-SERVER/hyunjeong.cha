@@ -20,8 +20,8 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<CommonApiResponse<PostIdResponse>> createPost(
-            @Valid @RequestBody final PostRequest request,
-            @RequestHeader Long userId) {
+            @Valid @RequestBody PostRequest request,
+            @RequestHeader final Long userId) {
         TextUtil.validatePost(request.title(), request.content());
         PostIdResponse response = postService.createPost(request, userId);
         return ResponseEntity.status(CommonSuccessCode.CREATED.getHttpStatus())
@@ -43,9 +43,9 @@ public class PostController {
 
     @PatchMapping("/{contentId}")
     public ResponseEntity<CommonApiResponse<PostResponse>> updatePostTitle(
-            @PathVariable Long contentId,
+            @PathVariable final Long contentId,
             @RequestBody PostUpdateRequest request,
-            @RequestHeader Long userId) {
+            @RequestHeader final Long userId) {
         TextUtil.validatePost(request.title(), request.content());
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.updatePost(contentId, request, userId)));    }
@@ -53,7 +53,7 @@ public class PostController {
     @DeleteMapping("/{contentId}")
     public ResponseEntity<CommonApiResponse<Void>> deletePostById(
             @PathVariable final Long contentId,
-            @RequestHeader Long userId) {
+            @RequestHeader final Long userId) {
         postService.deletePostById(contentId, userId);
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK));    }
