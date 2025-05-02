@@ -1,5 +1,6 @@
 package org.sopt.controller;
 
+import jakarta.validation.Valid;
 import org.sopt.common.CommonApiResponse;
 import org.sopt.common.CommonSuccessCode;
 import org.sopt.dto.*;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/v1/contents")
 public class PostController {
     private final PostService postService;
 
@@ -16,9 +18,9 @@ public class PostController {
         this.postService = postService;
     }
 
-    @PostMapping("/api/v1/contents")
+    @PostMapping
     public ResponseEntity<CommonApiResponse<PostIdResponse>> createPost(
-            @RequestBody final PostRequest request,
+            @Valid @RequestBody final PostRequest request,
             @RequestHeader Long userId) {
         TextUtil.validatePost(request.title(), request.content());
         PostIdResponse response = postService.createPost(request, userId);
@@ -27,28 +29,28 @@ public class PostController {
 
     }
 
-    @GetMapping("/api/v1/contents")
+    @GetMapping
     public ResponseEntity<CommonApiResponse<PostAllResponse>> getAllPosts() {
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.getAllPosts()));
     }
 
-    @GetMapping("/api/v1/contents/{contentId}")
+    @GetMapping("/{contentId}")
     public ResponseEntity<CommonApiResponse<PostResponse>> getPostById(@PathVariable final Long contentId) {
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.getPostById(contentId)));
     }
 
-    @PatchMapping("/api/v1/contents/{contentId}")
+    @PatchMapping("/{contentId}")
     public ResponseEntity<CommonApiResponse<PostResponse>> updatePostTitle(
-            @PathVariable final Long contentId,
-            @RequestBody final PostUpdateRequest request,
+            @PathVariable Long contentId,
+            @RequestBody PostUpdateRequest request,
             @RequestHeader Long userId) {
         TextUtil.validatePost(request.title(), request.content());
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.updatePost(contentId, request, userId)));    }
 
-    @DeleteMapping("/api/v1/contents/{contentId}")
+    @DeleteMapping("/{contentId}")
     public ResponseEntity<CommonApiResponse<Void>> deletePostById(
             @PathVariable final Long contentId,
             @RequestHeader Long userId) {
@@ -56,14 +58,14 @@ public class PostController {
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK));    }
 
-    @GetMapping(value = "/api/v1/contents/search", params = "keyword")
+    @GetMapping(value = "/search", params = "keyword")
     public ResponseEntity<CommonApiResponse<PostAllResponse>> searchPostsByKeyword(
             @RequestParam final String keyword
     ) {
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.searchPostsByKeyword(keyword)));    }
 
-    @GetMapping(value = "/api/v1/contents/search/tag", params = "tag")
+    @GetMapping(value = "/search/tag", params = "tag")
     public ResponseEntity<CommonApiResponse<PostAllResponse>> searchPostsByTag(
             @RequestParam final String tag
     ) {

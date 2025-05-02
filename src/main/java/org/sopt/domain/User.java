@@ -2,7 +2,7 @@ package org.sopt.domain;
 
 import jakarta.persistence.*;
 
-@Entity(name = "users")
+@Entity
 public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

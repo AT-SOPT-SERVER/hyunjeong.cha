@@ -21,7 +21,7 @@ public class Post extends BaseTimeEntity {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    PostType postType;
+    private PostType postType;
 
     public Post(String title, String content, User user, PostType postType) {
         this.title = title;
