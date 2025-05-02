@@ -29,9 +29,8 @@ public class PostService {
 
    @Transactional
     public PostIdResponse createPost(PostRequest request, Long userId){
-        if (postRepository.existsByTitle(request.title())) {
-            throw new CustomException(DUPLICATE_TITLE);
-        }
+       validateTitle(request.title());
+
        User user = userRepository.findById(userId)
                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
@@ -70,9 +69,7 @@ public class PostService {
 
     @Transactional
     public PostResponse updatePost(Long id, PostUpdateRequest request, Long userId){
-        if (postRepository.existsByTitle(request.title())) {
-            throw new CustomException(DUPLICATE_TITLE);
-        }
+        validateTitle(request.title());
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(EMPTY_POST));
 
@@ -110,5 +107,9 @@ public class PostService {
         return PostAllResponse.from(postResponses);
     }
 
-
+    private void validateTitle(String title){
+        if (postRepository.existsByTitle(title)) {
+            throw new CustomException(DUPLICATE_TITLE);
+        }
+    }
 }
