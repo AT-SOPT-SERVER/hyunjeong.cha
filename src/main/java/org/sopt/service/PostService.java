@@ -37,16 +37,16 @@ public class PostService {
 
         Post post = new Post(request.title(), request.content(), user, PostType.valueOf(request.postType()));
 
-        return new PostIdResponse(postRepository.save(post).getId());
+        return PostIdResponse.from(postRepository.save(post));
     }
 
     @Transactional(readOnly = true)
     public PostAllResponse getAllPosts() {
         List<PostListResponse> postResponses = postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream()
-                .map(post -> new PostListResponse(post.getTitle(), post.getId(), post.getUser().getName()))
+                .map(PostListResponse::from)
                 .toList();
 
-        return new PostAllResponse(postResponses);
+        return PostAllResponse.from(postResponses);
     }
 
     @Transactional(readOnly = true)
@@ -54,7 +54,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(EMPTY_POST));
 
-        return new PostResponse(post.getTitle(), post.getId(), post.getUser().getName(), post.getContent());
+        return PostResponse.from(post);
     }
 
     @Transactional
@@ -87,27 +87,27 @@ public class PostService {
             post.updateContent(request.content());
         }
 
-        return new PostResponse(post.getTitle(), post.getId(), post.getUser().getName(), post.getContent());
+        return PostResponse.from(post);
     }
 
     @Transactional(readOnly = true)
     public PostAllResponse searchPostsByKeyword(String keyword){
 
-        List<PostListResponse> postResponses = postRepository.searchByTitleOrUserName(keyword).stream()
-                .map(post -> new PostListResponse(post.getTitle(), post.getId(), post.getUser().getName()))
+        List<PostListResponse> postResponses = postRepository.findAll().stream()
+                .map(PostListResponse::from)
                 .toList();
 
-        return new PostAllResponse(postResponses);
+        return PostAllResponse.from(postResponses);
     }
 
     @Transactional(readOnly = true)
     public PostAllResponse searchPostsByTag(String tag){
 
-        List<PostListResponse> postResponses = postRepository.findByPostType(PostType.valueOf(tag)).stream()
-                .map(post -> new PostListResponse(post.getTitle(), post.getId(), post.getUser().getName()))
+        List<PostListResponse> postResponses = postRepository.findAll().stream()
+                .map(PostListResponse::from)
                 .toList();
 
-        return new PostAllResponse(postResponses);
+        return PostAllResponse.from(postResponses);
     }
 
 

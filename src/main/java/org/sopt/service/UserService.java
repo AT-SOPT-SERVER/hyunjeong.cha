@@ -19,6 +19,6 @@ public class UserService {
     @Transactional
     public UserSignupResponse signup(UserSignupRequest request){
         User user = new User(request.name());
-        return new UserSignupResponse(userRepository.save(user).getId());
+        return UserSignupResponse.from(userRepository.save(user));
     }
 }
