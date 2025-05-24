@@ -1,19 +1,16 @@
 package org.sopt.controller;
 
-import org.sopt.dto.PostAllResponse;
-import org.sopt.dto.PostRequest;
-import org.sopt.dto.PostIdResponse;
-import org.sopt.dto.PostResponse;
+import jakarta.validation.Valid;
+import org.sopt.common.CommonApiResponse;
+import org.sopt.common.CommonSuccessCode;
+import org.sopt.dto.*;
 import org.sopt.service.PostService;
 import org.sopt.utils.TextUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
-import static org.sopt.exception.CommonException.TOO_LONG_TITLE;
-
 @RestController
+@RequestMapping("/api/v1/contents")
 public class PostController {
     private final PostService postService;
 
@@ -21,45 +18,58 @@ public class PostController {
         this.postService = postService;
     }
 
-    @PostMapping("/api/v1/contents")
-    public ResponseEntity<PostIdResponse> createPost(@RequestBody final PostRequest request) {
-        if (TextUtil.lengthTitleWithEmoji(request.title())> 30) {
-            throw new IllegalArgumentException(TOO_LONG_TITLE.getMessage());
-        }
-        PostIdResponse response = postService.createPost(request);
-        return ResponseEntity.created(URI.create("/api/v1/contents")).body(response);
+    @PostMapping
+    public ResponseEntity<CommonApiResponse<PostIdResponse>> createPost(
+            @Valid @RequestBody PostRequest request,
+            @RequestHeader final Long userId) {
+        TextUtil.validatePost(request.title(), request.content());
+        PostIdResponse response = postService.createPost(request, userId);
+        return ResponseEntity.status(CommonSuccessCode.CREATED.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.CREATED, response));
 
     }
 
-    @GetMapping("/api/v1/contents")
-    public ResponseEntity<PostAllResponse> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts());
+    @GetMapping
+    public ResponseEntity<CommonApiResponse<PostAllResponse>> getAllPosts() {
+        return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.getAllPosts()));
     }
 
-    @GetMapping("/api/v1/contents/{contentId}")
-    public ResponseEntity<PostResponse> getPostById(@PathVariable final Long contentId) {
-        return ResponseEntity.ok(postService.getPostById(contentId));
+    @GetMapping("/{contentId}")
+    public ResponseEntity<CommonApiResponse<PostResponse>> getPostById(@PathVariable final Long contentId) {
+        return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.getPostById(contentId)));
     }
 
-    @PatchMapping("/api/v1/contents/{contentId}")
-    public ResponseEntity<PostResponse> updatePostTitle(@PathVariable final Long contentId,
-                                   @RequestBody final PostRequest request) {
-        if (TextUtil.lengthTitleWithEmoji(request.title())> 30) {
-            throw new IllegalArgumentException(TOO_LONG_TITLE.getMessage());
-        }
-        return ResponseEntity.ok(postService.updatePost(contentId, request));
-    }
+    @PatchMapping("/{contentId}")
+    public ResponseEntity<CommonApiResponse<PostResponse>> updatePostTitle(
+            @PathVariable final Long contentId,
+            @RequestBody PostUpdateRequest request,
+            @RequestHeader final Long userId) {
+        TextUtil.validatePost(request.title(), request.content());
+        return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.updatePost(contentId, request, userId)));    }
 
-    @DeleteMapping("/api/v1/contents/{contentId}")
-    public ResponseEntity<Void> deletePostById(@PathVariable final Long contentId) {
-        postService.deletePostById(contentId);
-        return ResponseEntity.ok().build();
-    }
+    @DeleteMapping("/{contentId}")
+    public ResponseEntity<CommonApiResponse<Void>> deletePostById(
+            @PathVariable final Long contentId,
+            @RequestHeader final Long userId) {
+        postService.deletePostById(contentId, userId);
+        return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK));    }
 
-    @GetMapping(value = "/api/v1/contents", params = "keyword")
-    public ResponseEntity<PostAllResponse> searchPostsByKeyword(
+    @GetMapping(value = "/search", params = "keyword")
+    public ResponseEntity<CommonApiResponse<PostAllResponse>> searchPostsByKeyword(
             @RequestParam final String keyword
     ) {
-        return ResponseEntity.ok(postService.searchPostsByKeyword(keyword));
-    }
+        return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.searchPostsByKeyword(keyword)));    }
+
+    @GetMapping(value = "/search/tag", params = "tag")
+    public ResponseEntity<CommonApiResponse<PostAllResponse>> searchPostsByTag(
+            @RequestParam final String tag
+    ) {
+        return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.searchPostsByTag(tag)));    }
+
 }

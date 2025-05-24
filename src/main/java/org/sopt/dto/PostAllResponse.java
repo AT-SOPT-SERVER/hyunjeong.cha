@@ -3,6 +3,9 @@ package org.sopt.dto;
 import java.util.List;
 
 public record PostAllResponse(
-        List<PostResponse> contentList
+        List<PostListResponse> contentList
 ) {
+    public static PostAllResponse from(List<PostListResponse> contentList){
+        return new PostAllResponse(contentList);
+    }
 }
