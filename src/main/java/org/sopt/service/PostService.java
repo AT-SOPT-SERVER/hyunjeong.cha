@@ -51,7 +51,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getPostById(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new CustomException(EMPTY_POST));
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
 
         return PostResponse.from(post);
     }
@@ -59,7 +59,7 @@ public class PostService {
     @Transactional
     public void deletePostById(Long id, Long userId) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new CustomException(EMPTY_POST));
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
 
         if (!post.getUser().getId().equals(userId))
             throw new CustomException(USER_UNAUTHORIZED);
@@ -71,7 +71,7 @@ public class PostService {
     public PostResponse updatePost(Long id, PostUpdateRequest request, Long userId){
         validateTitle(request.title());
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new CustomException(EMPTY_POST));
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
 
         if (!post.getUser().getId().equals(userId))
             throw new CustomException(USER_UNAUTHORIZED);

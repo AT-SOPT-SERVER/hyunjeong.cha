@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import org.sopt.domain.common.BaseTimeEntity;
 import org.sopt.domain.enums.PostType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class Post extends BaseTimeEntity {
 
@@ -22,6 +25,12 @@ public class Post extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private PostType postType;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "like", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
 
     public Post(String title, String content, User user, PostType postType) {
         this.title = title;
