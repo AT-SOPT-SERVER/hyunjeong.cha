@@ -10,7 +10,7 @@ import static org.sopt.common.CommentErrorCode.COMMENT_NOT_FOUND;
 
 @Component
 @RequiredArgsConstructor
-public class CommentFinder {
+public class CommentReader {
 
     private final CommentRepository commentRepository;
 
