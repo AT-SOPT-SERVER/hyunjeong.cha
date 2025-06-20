@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import org.sopt.domain.Comment;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.domain.enums.PostType;
@@ -21,10 +22,12 @@ import static org.sopt.common.UserErrorCode.USER_UNAUTHORIZED;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentReader commentReader;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository){
+    public PostService(PostRepository postRepository, UserRepository userRepository, CommentReader commentReader){
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.commentReader = commentReader;
     }
 
    @Transactional
@@ -53,7 +56,10 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
 
-        return PostResponse.from(post);
+        List<CommentResponse> comments = commentReader.getAllByPost(post)
+                .stream().map(comment -> CommentResponse.of(comment)).toList();
+
+        return PostResponse.from(post, comments);
     }
 
     @Transactional
@@ -68,7 +74,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse updatePost(Long id, PostUpdateRequest request, Long userId){
+    public void updatePost(Long id, PostUpdateRequest request, Long userId){
         validateTitle(request.title());
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
@@ -84,7 +90,6 @@ public class PostService {
             post.updateContent(request.content());
         }
 
-        return PostResponse.from(post);
     }
 
     @Transactional(readOnly = true)

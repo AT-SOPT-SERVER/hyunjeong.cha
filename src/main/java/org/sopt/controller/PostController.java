@@ -42,13 +42,15 @@ public class PostController {
     }
 
     @PatchMapping("/{contentId}")
-    public ResponseEntity<CommonApiResponse<PostResponse>> updatePostTitle(
+    public ResponseEntity<CommonApiResponse<Void>> updatePostTitle(
             @PathVariable final Long contentId,
             @RequestBody PostUpdateRequest request,
             @RequestHeader final Long userId) {
         TextUtil.validatePost(request.title(), request.content());
+        postService.updatePost(contentId, request, userId);
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
-                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.updatePost(contentId, request, userId)));    }
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK));
+    }
 
     @DeleteMapping("/{contentId}")
     public ResponseEntity<CommonApiResponse<Void>> deletePostById(

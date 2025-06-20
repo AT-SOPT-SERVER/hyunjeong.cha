@@ -2,9 +2,12 @@ package org.sopt.service;
 
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.Comment;
+import org.sopt.domain.Post;
 import org.sopt.exception.CustomException;
 import org.sopt.repository.CommentRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 import static org.sopt.common.CommentErrorCode.COMMENT_NOT_FOUND;
 
@@ -17,5 +20,9 @@ public class CommentReader {
     public Comment getById(Long commentId){
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
+    }
+
+    public List<Comment> getAllByPost(Post post){
+        return commentRepository.getAllByPost(post);
     }
 }
