@@ -48,7 +48,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostAllResponse getAllPosts(int size, int page) {
         Pageable pageable = PageRequest.of(size, page);
-        Page<Post> postPage = postRepository.findAllByOOrderByCreatedAtDesc(pageable);
+        Page<Post> postPage = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
         return PostAllResponse.from(postPage);
     }
@@ -95,23 +95,23 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostAllResponse searchPostsByKeyword(String keyword){
+    public PostSearchResponse searchPostsByKeyword(String keyword){
 
         List<PostListResponse> postResponses = postRepository.findAll().stream()
                 .map(PostListResponse::from)
                 .toList();
 
-        return PostAllResponse.from(postResponses);
+        return PostSearchResponse.from(postResponses);
     }
 
     @Transactional(readOnly = true)
-    public PostAllResponse searchPostsByTag(String tag){
+    public PostSearchResponse searchPostsByTag(String tag){
 
         List<PostListResponse> postResponses = postRepository.findAll().stream()
                 .map(PostListResponse::from)
                 .toList();
 
-        return PostAllResponse.from(postResponses);
+        return PostSearchResponse.from(postResponses);
     }
 
     private void validateTitle(String title){

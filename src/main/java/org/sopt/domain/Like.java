@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.sopt.domain.enums.LikeType;
 
+@Table(name = "likes")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Like {

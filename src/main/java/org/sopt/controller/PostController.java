@@ -64,14 +64,14 @@ public class PostController {
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK));    }
 
     @GetMapping(value = "/search", params = "keyword")
-    public ResponseEntity<CommonApiResponse<PostAllResponse>> searchPostsByKeyword(
+    public ResponseEntity<CommonApiResponse<PostSearchResponse>> searchPostsByKeyword(
             @RequestParam final String keyword
     ) {
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.searchPostsByKeyword(keyword)));    }
 
     @GetMapping(value = "/search/tag", params = "tag")
-    public ResponseEntity<CommonApiResponse<PostAllResponse>> searchPostsByTag(
+    public ResponseEntity<CommonApiResponse<PostSearchResponse>> searchPostsByTag(
             @RequestParam final String tag
     ) {
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())

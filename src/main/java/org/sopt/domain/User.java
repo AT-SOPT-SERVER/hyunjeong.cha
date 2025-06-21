@@ -14,7 +14,7 @@ public class User {
     @Column(nullable = false)
     String name;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
 
     public User(String name){

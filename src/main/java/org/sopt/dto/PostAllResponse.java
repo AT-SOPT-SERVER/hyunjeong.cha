@@ -19,4 +19,5 @@ public record PostAllResponse(
                         .collect(Collectors.toList())
         );
     }
+
 }

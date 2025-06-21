@@ -31,7 +31,7 @@ public class LikeService {
 
     private void toggle(ToggleLikeRequest request, User user){
 
-        if (request.likeType() == LikeType.COMMENT){
+        if (LikeType.valueOf(request.likeType()) == LikeType.COMMENT){
             Comment findComment = commentFinder.getById(request.id());
             Optional<Like> likeOptional = likeFinder.findByUserAndComment(user, findComment);
 
