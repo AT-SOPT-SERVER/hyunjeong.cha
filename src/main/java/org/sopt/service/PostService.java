@@ -8,6 +8,9 @@ import org.sopt.dto.*;
 import org.sopt.exception.CustomException;
 import org.sopt.repository.PostRepository;
 import org.sopt.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +46,11 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostAllResponse getAllPosts() {
-        List<PostListResponse> postResponses = postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream()
-                .map(PostListResponse::from)
-                .toList();
+    public PostAllResponse getAllPosts(int size, int page) {
+        Pageable pageable = PageRequest.of(size, page);
+        Page<Post> postPage = postRepository.findAllByOOrderByCreatedAtDesc(pageable);
 
-        return PostAllResponse.from(postResponses);
+        return PostAllResponse.from(postPage);
     }
 
     @Transactional(readOnly = true)

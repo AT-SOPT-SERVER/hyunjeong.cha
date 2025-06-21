@@ -30,9 +30,12 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonApiResponse<PostAllResponse>> getAllPosts() {
+    public ResponseEntity<CommonApiResponse<PostAllResponse>> getAllPosts(
+            @RequestParam int size,
+            @RequestParam int page
+    ) {
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
-                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.getAllPosts()));
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,postService.getAllPosts(size, page)));
     }
 
     @GetMapping("/{contentId}")
