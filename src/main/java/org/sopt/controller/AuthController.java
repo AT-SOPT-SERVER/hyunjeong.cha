@@ -4,22 +4,39 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.sopt.common.CommonApiResponse;
+import org.sopt.common.CommonSuccessCode;
 import org.sopt.domain.User;
+import org.sopt.dto.LoginRequest;
+import org.sopt.dto.LoginResponse;
+import org.sopt.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 //http://soptUser:sopt1234@localhost:8080/login로 요청 보냄 : soptUser:sopt1234가 헤더
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("api/v1/auth")
 public class AuthController {
 
-    @GetMapping("/login")
+    private final AuthService authService;
+
+    @PostMapping("/login")
+    public ResponseEntity<CommonApiResponse<LoginResponse>> login(
+            @Valid @RequestBody LoginRequest request
+    ){
+        LoginResponse response = authService.login(request);
+        return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
+                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,response));
+    }
+
+    /*@GetMapping("/login")
     public ResponseEntity<String> login(HttpServletRequest request){
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Basic")){
@@ -77,5 +94,5 @@ public class AuthController {
         }
 
         throw  new RuntimeException("");
-    }
+    }*/
 }

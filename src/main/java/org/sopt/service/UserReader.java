@@ -6,6 +6,7 @@ import org.sopt.exception.CustomException;
 import org.sopt.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
+import static org.sopt.common.AuthErrorCode.USER_NOT_REGISTERED;
 import static org.sopt.common.UserErrorCode.USER_NOT_FOUND;
 
 @Component
@@ -17,5 +18,10 @@ public class UserReader {
     public User getById(Long userId){
         return userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+    }
+
+    public User findByIdAndName(Long userId, String name){
+        return userRepository.findByIdAndName(userId, name)
+                .orElseThrow(() -> new CustomException(USER_NOT_REGISTERED));
     }
 }
