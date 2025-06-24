@@ -46,9 +46,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())  // CSRF 보호 비활성화
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin()) //h2/console 띄우기 위해 필요
-                )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement ->
