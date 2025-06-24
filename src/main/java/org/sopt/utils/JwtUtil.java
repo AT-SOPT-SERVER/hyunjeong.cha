@@ -25,7 +25,7 @@ public class JwtUtil implements InitializingBean {
 
     @Value("${jwt.access-token-expire-period}")
     @Getter
-    private Integer accessTokenExpirePeriod;
+    private Long accessTokenExpirePeriod;
 
     private Key key;
 
@@ -35,7 +35,7 @@ public class JwtUtil implements InitializingBean {
         return LoginResponse.of(accessToken);
     }
 
-    private String generateToken(final Long id, final Integer expirePeriod) {
+    private String generateToken(final Long id, final Long expirePeriod) {
         Claims claims = Jwts.claims()
                 .add("userId", id)
                 .build();

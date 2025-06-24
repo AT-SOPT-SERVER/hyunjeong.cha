@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.sopt.common.AuthErrorCode;
 import org.sopt.common.CommonApiResponse;
 import org.sopt.common.ErrorCode;
@@ -16,13 +17,15 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
 
-    public void commence(HttpServletRequest request, HttpServletResponse response, org.springframework.security.core.AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, org.springframework.security.core.AuthenticationException authException) throws IOException {
         ErrorCode errorCode = (ErrorCode) request.getAttribute("exception");
         if (errorCode == null) {
+            log.info("auth");
             errorCode = AuthErrorCode.UNAUTHORIZED;
         }
 

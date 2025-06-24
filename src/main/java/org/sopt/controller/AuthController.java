@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.sopt.common.CommonApiResponse;
 import org.sopt.common.CommonSuccessCode;
 import org.sopt.domain.User;
@@ -22,7 +23,8 @@ import java.util.Base64;
 //http://soptUser:sopt1234@localhost:8080/login로 요청 보냄 : soptUser:sopt1234가 헤더
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/auth")
+@RequestMapping("/api/v1/auth")
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -32,8 +34,8 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request
     ){
         LoginResponse response = authService.login(request);
-        return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
-                .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK,response));
+        return ResponseEntity.ok(CommonApiResponse.onSuccess(CommonSuccessCode.OK, response));
+
     }
 
     /*@GetMapping("/login")
