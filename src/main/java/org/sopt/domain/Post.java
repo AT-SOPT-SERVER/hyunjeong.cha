@@ -2,7 +2,6 @@ package org.sopt.domain;
 
 import jakarta.persistence.*;
 import org.sopt.domain.common.BaseTimeEntity;
-import org.sopt.domain.enums.PostType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +22,8 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private List<Tag> tag;
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<PostTag> postTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();

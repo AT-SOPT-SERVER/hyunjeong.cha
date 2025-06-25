@@ -1,25 +1,19 @@
 package org.sopt.service;
 
 import lombok.RequiredArgsConstructor;
-import org.sopt.domain.Comment;
-import org.sopt.domain.Post;
-import org.sopt.domain.User;
-import org.sopt.domain.enums.PostType;
+import org.sopt.domain.*;
 import org.sopt.dto.*;
 import org.sopt.exception.CustomException;
 import org.sopt.repository.PostRepository;
-import org.sopt.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.sopt.common.PostErrorCode.*;
-import static org.sopt.common.UserErrorCode.USER_NOT_FOUND;
 import static org.sopt.common.UserErrorCode.USER_UNAUTHORIZED;
 
 @Service
@@ -29,6 +23,7 @@ public class PostService {
     private final CommentReader commentReader;
     private final UserReader userReader;
     private final PostReader postReader;
+    private final TagReader tagReader;
 
     @Transactional
     public PostIdResponse createPost(PostRequest request, Long userId){
@@ -36,7 +31,12 @@ public class PostService {
 
        User user = userReader.getById(userId);
 
-        Post post = new Post(request.title(), request.content(), user, PostType.valueOf(request.postType()));
+       Post post = new Post(request.title(), request.content(), user);
+
+        for (String tagName : request.postType()) {
+            Tag tag = tagReader.findByName(tagName);
+            PostTag.createPostTag(post, tag);
+        }
 
         return PostIdResponse.from(postRepository.save(post));
     }
@@ -95,9 +95,9 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostSearchResponse searchPostsByTag(String tag){
+    public PostSearchResponse searchPostsByTag(String tagName){
 
-        List<PostListResponse> postResponses = postRepository.findAll().stream()
+        List<PostListResponse> postResponses = postReader.searchByTag(tagName).stream()
                 .map(PostListResponse::from)
                 .toList();
 

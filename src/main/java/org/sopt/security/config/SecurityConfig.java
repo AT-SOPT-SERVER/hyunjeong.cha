@@ -25,7 +25,8 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     public static final String[] AUTH_WHITELIST = {
-            "/api/v1/auth/login"
+            "/api/v1/auth/login",
+            "/api/v1/contents/search",
     };
 
     public static final String[] SWAGGER_WHITELIST = {

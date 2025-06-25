@@ -27,4 +27,8 @@ public class PostReader {
     public List<Post> searchByTitleOrUserName(String keyword){
         return postCustomRepository.searchByTitleOrUserName(keyword);
     }
+
+    public List<Post> searchByTag(String tagName){
+        return postCustomRepository.searchByTag(tagName);
+    }
 }

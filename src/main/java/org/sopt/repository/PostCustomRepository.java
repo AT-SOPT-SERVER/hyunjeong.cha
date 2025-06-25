@@ -8,4 +8,6 @@ import java.util.List;
 public interface PostCustomRepository {
 
     List<Post> searchByTitleOrUserName(String keyworde);
+
+    List<Post> searchByTag(String tag);
 }
