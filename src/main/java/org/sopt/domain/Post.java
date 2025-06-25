@@ -23,8 +23,8 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    private PostType postType;
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<Tag> tag;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
@@ -32,11 +32,10 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Like> likes = new ArrayList<>();
 
-    public Post(String title, String content, User user, PostType postType) {
+    public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
         this.user = user;
-        this.postType = postType;
     }
 
     public Post() {
