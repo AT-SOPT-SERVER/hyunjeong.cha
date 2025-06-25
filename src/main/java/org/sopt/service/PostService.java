@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.Comment;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
@@ -22,23 +23,17 @@ import static org.sopt.common.UserErrorCode.USER_NOT_FOUND;
 import static org.sopt.common.UserErrorCode.USER_UNAUTHORIZED;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final CommentReader commentReader;
+    private final UserReader userReader;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, CommentReader commentReader){
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-        this.commentReader = commentReader;
-    }
-
-   @Transactional
+    @Transactional
     public PostIdResponse createPost(PostRequest request, Long userId){
        validateTitle(request.title());
 
-       User user = userRepository.findById(userId)
-               .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+       User user = userReader.getById(userId);
 
         Post post = new Post(request.title(), request.content(), user, PostType.valueOf(request.postType()));
 
@@ -84,14 +79,8 @@ public class PostService {
         if (!post.getUser().getId().equals(userId))
             throw new CustomException(USER_UNAUTHORIZED);
 
-        if (request.title() != null) {
-            post.updateTitle(request.title());
-        }
-
-        if (request.content() != null) {
-            post.updateContent(request.content());
-        }
-
+        post.updateTitle(request.title());
+        post.updateContent(request.content());
     }
 
     @Transactional(readOnly = true)
