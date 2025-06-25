@@ -8,6 +8,7 @@ import org.sopt.dto.CommentIdResponse;
 import org.sopt.dto.CommentRequest;
 import org.sopt.service.CommentService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,7 @@ public class CommentController {
     public ResponseEntity<CommonApiResponse<CommentIdResponse>> createComment(
             @Valid @RequestBody CommentRequest request,
             @PathVariable final Long postId,
-            @RequestHeader final Long userId
+            @AuthenticationPrincipal Long userId
             ){
         CommentIdResponse response = commentService.createComment(request, userId, postId);
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())

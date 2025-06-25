@@ -7,6 +7,7 @@ import org.sopt.dto.*;
 import org.sopt.service.PostService;
 import org.sopt.utils.TextUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<CommonApiResponse<PostIdResponse>> createPost(
             @Valid @RequestBody PostRequest request,
-            @RequestHeader final Long userId) {
+            @AuthenticationPrincipal Long userId) {
         TextUtil.validatePost(request.title(), request.content());
         PostIdResponse response = postService.createPost(request, userId);
         return ResponseEntity.status(CommonSuccessCode.CREATED.getHttpStatus())
@@ -48,7 +49,7 @@ public class PostController {
     public ResponseEntity<CommonApiResponse<Void>> updatePostTitle(
             @PathVariable final Long contentId,
             @RequestBody PostUpdateRequest request,
-            @RequestHeader final Long userId) {
+            @AuthenticationPrincipal Long userId) {
         TextUtil.validatePost(request.title(), request.content());
         postService.updatePost(contentId, request, userId);
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
@@ -58,7 +59,7 @@ public class PostController {
     @DeleteMapping("/{contentId}")
     public ResponseEntity<CommonApiResponse<Void>> deletePostById(
             @PathVariable final Long contentId,
-            @RequestHeader final Long userId) {
+            @AuthenticationPrincipal Long userId) {
         postService.deletePostById(contentId, userId);
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
                 .body(CommonApiResponse.onSuccess(CommonSuccessCode.OK));    }

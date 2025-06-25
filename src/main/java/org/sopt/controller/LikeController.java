@@ -7,6 +7,7 @@ import org.sopt.common.CommonSuccessCode;
 import org.sopt.dto.ToggleLikeRequest;
 import org.sopt.service.LikeService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +20,7 @@ public class LikeController {
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> toggleLike(
             @Valid @RequestBody final ToggleLikeRequest request,
-            @RequestHeader final Long userId) {
+            @AuthenticationPrincipal Long userId) {
         likeService.toggleLike(userId, request);
 
         return ResponseEntity.status(CommonSuccessCode.OK.getHttpStatus())
