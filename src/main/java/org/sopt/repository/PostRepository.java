@@ -13,8 +13,8 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     boolean existsByTitle(String title);
 
-    @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% OR p.user.name LIKE %:keyword%")
-    List<Post> searchByTitleOrUserName(@Param("keyword") String keyword);
+    /*@Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% OR p.user.name LIKE %:keyword%")
+    List<Post> searchByTitleOrUserName(@Param("keyword") String keyword);*/
 
     List<Post> findByPostType(PostType postType);
 

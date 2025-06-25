@@ -28,6 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final CommentReader commentReader;
     private final UserReader userReader;
+    private final PostReader postReader;
 
     @Transactional
     public PostIdResponse createPost(PostRequest request, Long userId){
@@ -86,7 +87,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostSearchResponse searchPostsByKeyword(String keyword){
 
-        List<PostListResponse> postResponses = postRepository.findAll().stream()
+        List<PostListResponse> postResponses = postReader.searchByTitleOrUserName(keyword).stream()
                 .map(PostListResponse::from)
                 .toList();
 
