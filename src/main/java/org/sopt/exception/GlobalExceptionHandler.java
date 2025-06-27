@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.sopt.common.CommonApiResponse;
 import org.sopt.common.CommonErrorCode;
 import org.sopt.common.ErrorCode;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -26,8 +27,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CommonApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
         ErrorCode errorCode = CommonErrorCode.INVALID_INPUT_VALUE;
+
+        String message = e.getBindingResult().getAllErrors().stream()
+                .findFirst()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse(errorCode.getMessage());
+
         return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(CommonApiResponse.onFailure(errorCode));
+                .body(CommonApiResponse.onFailure(errorCode, message));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

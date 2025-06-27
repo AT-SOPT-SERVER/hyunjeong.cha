@@ -34,6 +34,10 @@ public class CommonApiResponse<T>{
         return new CommonApiResponse<>(errorCode.getHttpStatus().value(), errorCode.getMessage());
     }
 
+    public static <T> CommonApiResponse<T> onFailure(ErrorCode errorCode, String message){
+        return new CommonApiResponse<>(errorCode.getHttpStatus().value(), message);
+    }
+
     public int getCode() {
         return code;
     }
