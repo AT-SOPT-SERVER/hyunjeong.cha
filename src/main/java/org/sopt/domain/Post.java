@@ -1,10 +1,15 @@
 package org.sopt.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.sopt.domain.common.BaseTimeEntity;
-import org.sopt.domain.enums.PostType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,18 +25,19 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    private PostType postType;
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<PostTag> postTags = new ArrayList<>();
 
-    public Post(String title, String content, User user, PostType postType) {
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
+
+    public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
         this.user = user;
-        this.postType = postType;
-    }
-
-    public Post() {
-
     }
 
     public Long getId() {
@@ -54,12 +60,11 @@ public class Post extends BaseTimeEntity {
         this.content = content;
     }
 
-    public void updatePost(String content, String title) {
-        this.content = content;
-        this.title = title;
-    }
-
     public User getUser() {
         return user;
+    }
+
+    public void addPostTag(PostTag postTag) {
+        this.postTags.add(postTag);
     }
 }
