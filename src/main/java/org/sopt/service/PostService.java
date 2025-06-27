@@ -35,8 +35,10 @@ public class PostService {
 
         for (String tagName : request.postType()) {
             Tag tag = tagReader.findByName(tagName);
-            PostTag.createPostTag(post, tag);
+            PostTag postTag = PostTag.createPostTag(post, tag);
+            post.addPostTag(postTag);
         }
+
 
         return PostIdResponse.from(postRepository.save(post));
     }

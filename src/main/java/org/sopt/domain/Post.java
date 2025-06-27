@@ -1,12 +1,15 @@
 package org.sopt.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.sopt.domain.common.BaseTimeEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,10 +40,6 @@ public class Post extends BaseTimeEntity {
         this.user = user;
     }
 
-    public Post() {
-
-    }
-
     public Long getId() {
         return this.id;
     }
@@ -61,12 +60,11 @@ public class Post extends BaseTimeEntity {
         this.content = content;
     }
 
-    public void updatePost(String content, String title) {
-        this.content = content;
-        this.title = title;
-    }
-
     public User getUser() {
         return user;
+    }
+
+    public void addPostTag(PostTag postTag) {
+        this.postTags.add(postTag);
     }
 }
